@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/anoskov/sysinfo"
 	"fmt"
+	"github.com/anoskov/sysinfo"
 )
 
 func main() {

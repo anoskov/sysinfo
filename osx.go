@@ -2,11 +2,11 @@ package sysinfo
 
 import (
 	"C"
+	"bytes"
+	"encoding/binary"
 	"syscall"
 	"time"
 	"unsafe"
-	"bytes"
-	"encoding/binary"
 )
 
 /*********************
@@ -14,7 +14,6 @@ import (
 **     Methods      **
 **		    **
 **********************/
-
 
 func (self *Uptime) Get() error {
 	tv := syscall.Timeval{}
@@ -27,7 +26,6 @@ func (self *Uptime) Get() error {
 
 	return nil
 }
-
 
 /*********************
 **		    **

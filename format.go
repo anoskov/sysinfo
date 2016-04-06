@@ -1,8 +1,8 @@
 package sysinfo
 
 import (
-	"bytes"
 	"bufio"
+	"bytes"
 	"fmt"
 )
 
