@@ -5,6 +5,8 @@ import (
 	"syscall"
 	"time"
 	"unsafe"
+	"bytes"
+	"encoding/binary"
 )
 
 /*********************
@@ -17,11 +19,11 @@ import (
 func (self *Uptime) Get() error {
 	tv := syscall.Timeval{}
 
-	if err := sysctlbyname("kern.boottime", &tv); err != nil {
+	if err := sysctlByName("kern.boottime", &tv); err != nil {
 		return err
 	}
 
-	self.Length = time.Since(time.Unix(tv.Unix())).Seconds()
+	self.Duration = time.Since(time.Unix(tv.Unix())).Seconds()
 
 	return nil
 }
@@ -46,4 +48,23 @@ func sysctl(mib []C.int, old *byte, oldlen *uintptr, new *byte, newlen uintptr) 
 		err = e1
 	}
 	return
+}
+
+func sysctlByName(name string, data interface{}) (err error) {
+	val, err := syscall.Sysctl(name)
+	if err != nil {
+		return err
+	}
+
+	buf := []byte(val)
+
+	switch v := data.(type) {
+	case *uint64:
+		*v = *(*uint64)(unsafe.Pointer(&buf[0]))
+		return
+	}
+
+	bbuf := bytes.NewBuffer([]byte(val))
+
+	return binary.Read(bbuf, binary.LittleEndian, data)
 }
