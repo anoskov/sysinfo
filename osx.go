@@ -1,7 +1,11 @@
 package sysinfo
 
+/*
+#include <stdlib.h>
+*/
+import "C"
+
 import (
-	"C"
 	"bytes"
 	"encoding/binary"
 	"syscall"
@@ -23,6 +27,18 @@ func (self *Uptime) Get() error {
 	}
 
 	self.Duration = time.Since(time.Unix(tv.Unix())).Seconds()
+
+	return nil
+}
+
+func (self *AverageLoad) Get() error {
+	avg := []C.double{0, 0, 0}
+
+	C.getloadavg(&avg[0], C.int(len(avg)))
+
+	self.One = float64(avg[0])
+	self.Five = float64(avg[1])
+	self.Fifteen = float64(avg[2])
 
 	return nil
 }
