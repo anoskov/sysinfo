@@ -7,3 +7,7 @@ type Uptime struct {
 type AverageLoad struct {
 	One, Five, Fifteen float64
 }
+
+type CPU struct {
+	Count int
+}
