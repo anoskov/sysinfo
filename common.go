@@ -7,3 +7,9 @@ func (self *CPU) Get() error {
 
 	return nil
 }
+
+func (self *Goroutine) Get() error {
+	self.Count = runtime.NumGoroutine()
+
+	return nil
+}
