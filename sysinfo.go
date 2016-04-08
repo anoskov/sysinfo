@@ -11,3 +11,7 @@ type AverageLoad struct {
 type CPU struct {
 	Count int
 }
+
+type Goroutine struct {
+	Count int
+}
