@@ -5,8 +5,8 @@
 ## Features
 
 - [ ] Support for Linux, Windows, OSX
-- [ ] Get CPU count
-- [ ] Get Goroutine count
+- [X] Get CPU count
+- [X] Get Goroutine count
 - [ ] Get Node Uptime
 - [ ] Get RAM
 - [ ] Get Swap
