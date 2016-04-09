@@ -15,3 +15,11 @@ type CPU struct {
 type Goroutine struct {
 	Count int
 }
+
+type RAM struct {
+	Total      uint64
+	Used       uint64
+	Free       uint64
+	ActualFree uint64
+	ActualUsed uint64
+}
