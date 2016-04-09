@@ -2,6 +2,14 @@ package sysinfo
 
 /*
 #include <stdlib.h>
+#include <sys/sysctl.h>
+#include <sys/mount.h>
+#include <mach/mach_init.h>
+#include <mach/mach_host.h>
+#include <mach/host_info.h>
+#include <libproc.h>
+#include <mach/processor_info.h>
+#include <mach/vm_map.h>
 */
 import "C"
 
@@ -11,6 +19,7 @@ import (
 	"syscall"
 	"time"
 	"unsafe"
+	"fmt"
 )
 
 /*********************
@@ -39,6 +48,27 @@ func (self *AverageLoad) Get() error {
 	self.One = float64(avg[0])
 	self.Five = float64(avg[1])
 	self.Fifteen = float64(avg[2])
+
+	return nil
+}
+
+func (self *RAM) Get() error {
+	var vmstat C.vm_statistics_data_t
+
+	if err := sysctlByName("hw.memsize", &self.Total); err != nil {
+		return err
+	}
+
+	if err := vm_info(&vmstat); err != nil {
+		return err
+	}
+
+	kern := uint64(vmstat.inactive_count) << 12
+	self.Free = uint64(vmstat.free_count) << 12
+
+	self.Used = self.Total - self.Free
+	self.ActualFree = self.Free + kern
+	self.ActualUsed = self.Used - kern
 
 	return nil
 }
@@ -81,4 +111,20 @@ func sysctlByName(name string, data interface{}) (err error) {
 	bbuf := bytes.NewBuffer([]byte(val))
 
 	return binary.Read(bbuf, binary.LittleEndian, data)
+}
+
+func vm_info(vmstat *C.vm_statistics_data_t) error {
+	var count C.mach_msg_type_number_t = C.HOST_VM_INFO_COUNT
+
+	status := C.host_statistics(
+		C.host_t(C.mach_host_self()),
+		C.HOST_VM_INFO,
+		C.host_info_t(unsafe.Pointer(vmstat)),
+		&count)
+
+	if status != C.KERN_SUCCESS {
+		return fmt.Errorf("host_statistics=%d", status)
+	}
+
+	return nil
 }
