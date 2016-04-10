@@ -23,3 +23,9 @@ type RAM struct {
 	ActualFree uint64
 	ActualUsed uint64
 }
+
+type Swap struct {
+	Total uint64
+	Used  uint64
+	Free  uint64
+}
