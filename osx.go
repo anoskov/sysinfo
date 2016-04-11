@@ -73,6 +73,24 @@ func (self *RAM) Get() error {
 	return nil
 }
 
+type xsw_usage struct {
+	Total, Avail, Used uint64
+}
+
+func (self *Swap) Get() error {
+	sw_usage := xsw_usage{}
+
+	if err := sysctlByName("vm.swapusage", &sw_usage); err != nil {
+		return err
+	}
+
+	self.Total = sw_usage.Total
+	self.Used = sw_usage.Used
+	self.Free = sw_usage.Avail
+
+	return nil
+}
+
 /*********************
 **		    **
 **  Util Functions  **
